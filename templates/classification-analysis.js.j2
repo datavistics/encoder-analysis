@@ -11,6 +11,7 @@ const filePath = `{{ results_file }}`;
 const hwType = "{{ hw_type }}";
 const batchSize = {{ batch_size }};
 const engine = "{{ engine }}";
+const vendor = "{{ vendor }}";
 
 // Metrics definition
 const responseLatency = new Trend('response_latency', true);
@@ -130,6 +131,7 @@ export function handleSummary(data) {
         hw_type: hwType,
         batch_size: batchSize,
         engine: engine,
+        vendor: vendor,
         vus: {{ pre_allocated_vus }}
     };
 

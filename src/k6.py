@@ -18,6 +18,7 @@ def call_k6(endpoint, vus, total_requests, template_file, output_file, dataset_p
     env = Environment(loader=FileSystemLoader(template_dir))
     template = env.get_template(template_file)
     hw_type = endpoint.__dict__['raw']['compute']['instanceType']
+    vendor = endpoint.__dict__['raw']['compute']['vendor']
     batch_size = endpoint.__dict__['raw']['model']['env']['INFINITY_BATCH_SIZE']
     engine = endpoint.__dict__['raw']['model']['env']['INFINITY_ENGINE']
     results_file = Path("./results").resolve() / f'{hw_type}' / f'{hw_type}_{engine}_{batch_size}_{vus}.json'
@@ -35,6 +36,7 @@ def call_k6(endpoint, vus, total_requests, template_file, output_file, dataset_p
             total_requests=total_requests,
             hw_type=hw_type,
             batch_size=batch_size,
+            vendor=vendor,
             engine=engine,
             duration="1m"
             )
