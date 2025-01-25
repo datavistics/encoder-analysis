@@ -1,7 +1,9 @@
 import json
 import os
+from pathlib import Path
 import random
 
+import pandas as pd
 from loguru import logger
 
 
@@ -40,3 +42,28 @@ def save_dataset(data, file_path):
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
     logger.success(f"Saved dataset to {file_path}")
+
+
+def load_json_files(folder_path):
+    all_data = []
+    folder = Path(folder_path)
+
+    # Iterate over all JSON files in the folder
+    for file_path in folder.glob("*/*.json"):
+        try:
+            with file_path.open("r", encoding="utf-8") as f:
+                data = json.load(f)
+
+                # If data is a list of dicts, extend it
+                if isinstance(data, list):
+                    all_data.extend(data)
+                # If data is a single dict, append it as a row
+                elif isinstance(data, dict):
+                    all_data.append(data)
+                else:
+                    logger.warning(f"Skipping {file_path.name}: Unexpected format")
+        except json.JSONDecodeError:
+            logger.error(f"Skipping {file_path.name}: Invalid JSON")
+
+    # Convert to DataFrame
+    return pd.DataFrame(all_data)
