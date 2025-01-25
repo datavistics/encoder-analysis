@@ -10,6 +10,7 @@ const dataset = JSON.parse(open("{{ data_file }}"));
 const filePath = `{{ results_file }}`;
 const hwType = "{{ hw_type }}";
 const batchSize = {{ batch_size }};
+const engine = {{ engine }};
 
 // Metrics definition
 const responseLatency = new Trend('response_latency', true);
@@ -128,6 +129,7 @@ export function handleSummary(data) {
         throughput_req_per_sec: throughput, // Requests per second
         hw_type: hwType,
         batch_size: batchSize,
+        engine: engine,
         vus: {{ pre_allocated_vus }}
     };
 

@@ -18,8 +18,9 @@ def call_k6(endpoint, vus, total_requests, template_file, output_file, dataset_p
     env = Environment(loader=FileSystemLoader(template_dir))
     template = env.get_template(template_file)
     hw_type = endpoint.__dict__['raw']['compute']['instanceType']
-    batch_size = endpoint.__dict__['raw']['model']['env']['BATCH_SIZE']
-    results_file = Path("./results").resolve() / f'{hw_type}' / f'{hw_type}_{batch_size}_{vus}.json'
+    batch_size = endpoint.__dict__['raw']['model']['env']['INFINITY_BATCH_SIZE']
+    engine = endpoint.__dict__['raw']['model']['env']['INFINITY_ENGINE']
+    results_file = Path("./results").resolve() / f'{hw_type}' / f'{hw_type}_{engine}_{batch_size}_{vus}.json'
     if results_file.exists():
         logger.info(f"results file {results_file} already exists")
         with open(results_file) as f:
@@ -34,6 +35,7 @@ def call_k6(endpoint, vus, total_requests, template_file, output_file, dataset_p
             total_requests=total_requests,
             hw_type=hw_type,
             batch_size=batch_size,
+            engine=engine,
             duration="1m"
             )
     # Ensure output directory exists
