@@ -21,7 +21,7 @@ def call_k6(endpoint, vus, total_requests, template_file, output_file, dataset_p
     vendor = endpoint.__dict__['raw']['compute']['vendor']
     batch_size = endpoint.__dict__['raw']['model']['env']['INFINITY_BATCH_SIZE']
     engine = endpoint.__dict__['raw']['model']['env']['INFINITY_ENGINE']
-    results_file = Path("./results").resolve() / f'{hw_type}' / f'{hw_type}_{engine}_{batch_size}_{vus}.json'
+    results_file = Path("./results").resolve() / f'{hw_type}' / f'{vendor}_{hw_type}_{engine}_{batch_size}_{vus}.json'
     if results_file.exists():
         logger.info(f"results file {results_file} already exists")
         with open(results_file) as f:
