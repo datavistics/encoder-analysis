@@ -110,7 +110,7 @@ def deploy_endpoint(instance_config):
     elapsed_minutes, elapsed_seconds = divmod(elapsed_time, 60)
 
     hw_type = endpoint.__dict__['raw']['compute']['instanceType']
-    batch_size = endpoint.__dict__['raw']['model']['env']['BATCH_SIZE']
+    batch_size = endpoint.__dict__['raw']['model']['env']['INFINITY_BATCH_SIZE']
     logger.success(
             f"Endpoint created successfully: hw={hw_type}\tbs={batch_size}\t"
             f"Time taken: {int(elapsed_minutes)}m {elapsed_seconds:.2f}s"
