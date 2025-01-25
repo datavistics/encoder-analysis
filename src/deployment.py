@@ -14,9 +14,6 @@ def deploy_endpoint(instance_config):
         start_time = time.time()  # Record start time
         endpoint = create_inference_endpoint(
                 endpoint_name,
-                # repository=MODEL,
-                vendor='aws',
-                region='us-east-1',
                 namespace=whoami()['name'],
                 framework="pytorch",
                 task='text-classification',
