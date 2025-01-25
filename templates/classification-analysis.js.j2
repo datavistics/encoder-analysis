@@ -10,7 +10,7 @@ const dataset = JSON.parse(open("{{ data_file }}"));
 const filePath = `{{ results_file }}`;
 const hwType = "{{ hw_type }}";
 const batchSize = {{ batch_size }};
-const engine = {{ engine }};
+const engine = "{{ engine }}";
 
 // Metrics definition
 const responseLatency = new Trend('response_latency', true);
