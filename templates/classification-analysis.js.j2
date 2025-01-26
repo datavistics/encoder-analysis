@@ -22,7 +22,7 @@ const totalRequests = new Trend('total_requests', true);
 
 export function generatePayload(example) {
     return {
-        "input": [example.text]
+        "input": [example.{{ text_column }}]
     };
 }
 

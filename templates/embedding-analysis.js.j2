@@ -21,7 +21,7 @@ const embeddingSize = new Trend('embedding_size', true);
 
 export function generatePayload(example) {
     return {
-        "input": [example.text]
+        "input": [example.{{ text_column }}]
     };
 }
 
@@ -46,7 +46,7 @@ export default function run() {
     };
     const query = dataset[scenario.iterationInTest % dataset.length];
     const payload = JSON.stringify(generatePayload(query));
-    const url = `${host}/embed`;
+    const url = `${host}/embeddings`;
     const params = {
         method: 'POST',
         body: payload,

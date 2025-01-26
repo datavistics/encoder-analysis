@@ -13,7 +13,7 @@ template_file = "classification-analysis.js.j2"
 output_file = Path("./generated").resolve() / "classification-analysis.js"
 
 
-def call_k6(endpoint, vus, total_requests, template_file, output_file, dataset_path, k6_bin):
+def call_k6(endpoint, text_column, vus, total_requests, template_file, output_file, dataset_path, k6_bin):
     if 'classification' in template_file:
         task = 'classification'
     elif 'embedding' in template_file:
@@ -38,6 +38,7 @@ def call_k6(endpoint, vus, total_requests, template_file, output_file, dataset_p
             return data.get("throughput_req_per_sec", 0)
     # Define values for template variables
     rendered_script = template.render(
+            text_column=text_column,
             host=endpoint.url,
             data_file=str(Path(dataset_path).resolve()),
             results_file=str(results_file),
