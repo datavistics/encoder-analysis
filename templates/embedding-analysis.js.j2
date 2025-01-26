@@ -1,0 +1,132 @@
+import {check, fail} from 'k6';
+import http from 'k6/http';
+import {scenario} from 'k6/execution';
+import {Trend, Counter} from 'k6/metrics';
+import {textSummary} from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
+
+const host = "{{ host }}";
+const apiKey = __ENV.HF_TOKEN;
+const dataset = JSON.parse(open("{{ data_file }}"));
+const filePath = `{{ results_file }}`;
+const hwType = "{{ hw_type }}";
+const batchSize = {{ batch_size }};
+const engine = "{{ engine }}";
+const vendor = "{{ vendor }}";
+
+// Metrics definition
+const responseLatency = new Trend('response_latency', true);
+const requestThroughput = new Counter('request_throughput');
+const totalRequests = new Trend('total_requests', true);
+const embeddingSize = new Trend('embedding_size', true);
+
+export function generatePayload(example) {
+    return {
+        "input": [example.text]
+    };
+}
+
+export const options = {
+    scenarios: {
+        shared_load_test: {
+            executor: 'shared-iterations',
+            vus: {{ pre_allocated_vus }}, // Number of VUs
+            iterations: {{ total_requests }}, // Total number of requests
+            maxDuration: '{{ duration }}', // Time limit
+        },
+    },
+};
+
+let localRequestCount = 0; // Track within each VU
+
+export default function run() {
+    const headers = {
+        Accept: "application/json",
+        Authorization: "Bearer " + apiKey,
+        "Content-Type": "application/json",
+    };
+    const query = dataset[scenario.iterationInTest % dataset.length];
+    const payload = JSON.stringify(generatePayload(query));
+    const url = `${host}/embed`;
+    const params = {
+        method: 'POST',
+        body: payload,
+        headers,
+    };
+
+    // Sending the request
+    const startTime = Date.now();
+    const res = http.post(url, payload, params);
+    const endTime = Date.now();
+    const deltaMs = endTime - startTime; // Duration in milliseconds
+
+    // Add response latency
+    responseLatency.add(deltaMs);
+    localRequestCount += 1;
+    requestThroughput.add(1); // Still use k6 counter
+
+    // Check the response
+    const passedCheck = check(res, {
+        'http_200': (r) => r.status === 200,
+        'valid_embedding': (r) => {
+            try {
+                const data = JSON.parse(r.body);
+                return data.object === 'list' && data.data && data.data.length > 0 && Array.isArray(data.data[0].embedding);
+            } catch (e) {
+                return false;
+            }
+        }
+    });
+
+    if (!passedCheck) {
+        fail('Request failed with status ' + res.status + ' or invalid embedding format');
+        return;
+    }
+
+    // Process the response
+    try {
+        const data = JSON.parse(res.body);
+        if (data.object === 'list' && data.data && data.data[0] && data.data[0].embedding) {
+            embeddingSize.add(data.data[0].embedding.length);
+        }
+    } catch (e) {
+        fail('Failed to parse response body: ' + e);
+    }
+
+    // Add custom metrics
+    totalRequests.add(localRequestCount);
+}
+
+// Writing Summary to a JSON File
+export function handleSummary(data) {
+    // Extract required metrics
+    const totalRequests = data.metrics.iterations.values.count; // Total requests
+    const failedRequests = data.metrics.http_req_failed.values.count || 0;
+    const successfulRequests = totalRequests - failedRequests; // Corrected calculation
+    const avgLatency = data.metrics.response_latency.values.avg; // Average latency in ms
+    const p95Latency = data.metrics.response_latency.values['p(95)']; // 95th percentile latency in ms
+    const testDuration = data.state.testRunDurationMs / 1000; // Convert from ms to seconds
+    const throughput = data.metrics.iterations.values.rate; // Requests per second
+    const avgEmbeddingSize = data.metrics.embedding_size.values.avg || 0; // Average embedding size
+
+    // Construct the summary object with units in keys
+    const summary = {
+        total_requests: totalRequests,
+        test_duration_sec: testDuration, // Seconds
+        successful_requests: successfulRequests,
+        avg_latency_ms: avgLatency, // Milliseconds
+        p95_latency_ms: p95Latency, // Milliseconds
+        throughput_req_per_sec: throughput, // Requests per second
+        avg_embedding_size: avgEmbeddingSize, // Average embedding size
+        hw_type: hwType,
+        batch_size: batchSize,
+        engine: engine,
+        vendor: vendor,
+        vus: {{ pre_allocated_vus }}
+    };
+
+    // Write the summary to a JSON file
+    return {
+        [filePath]: JSON.stringify(summary, null, 2), // Save JSON output
+        stdout: textSummary(data, { indent: ' ', enableColors: true }), // Show summary in console
+    };
+}
