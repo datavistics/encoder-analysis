@@ -14,6 +14,15 @@ output_file = Path("./generated").resolve() / "classification-analysis.js"
 
 
 def call_k6(endpoint, vus, total_requests, template_file, output_file, dataset_path, k6_bin):
+    if 'classification' in template_file:
+        task = 'classification'
+    elif 'embedding' in template_file:
+        task = 'embedding'
+    elif 'vision-embedding' in template_file:
+        task = 'vision-embedding'
+    else:
+        raise ValueError('Unknown task')
+
     # Load the Jinja2 template
     env = Environment(loader=FileSystemLoader(template_dir))
     template = env.get_template(template_file)
@@ -21,7 +30,7 @@ def call_k6(endpoint, vus, total_requests, template_file, output_file, dataset_p
     vendor = endpoint.__dict__['raw']['provider']['vendor']
     batch_size = endpoint.__dict__['raw']['model']['env']['INFINITY_BATCH_SIZE']
     engine = endpoint.__dict__['raw']['model']['env']['INFINITY_ENGINE']
-    results_file = Path("./results").resolve() / f'{hw_type}' / f'{vendor}_{hw_type}_{engine}_{batch_size}_{vus}.json'
+    results_file = Path("./results").resolve() / task / f'{hw_type}' / f'{vendor}_{hw_type}_{engine}_{batch_size}_{vus}.json'
     if results_file.exists():
         logger.info(f"results file {results_file} already exists")
         with open(results_file) as f:
