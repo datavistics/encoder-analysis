@@ -64,10 +64,6 @@ def call_k6(endpoint, vus, total_requests, template_file, output_file, dataset_p
     except Exception:
         return 0
 
-    # # Print k6 output
-    # print(process.stdout)
-    # print(process.stderr)
-
 
 def optimal_vus(max_vus, args_dict, start_vus=1):
     # Exponential search
@@ -82,8 +78,8 @@ def optimal_vus(max_vus, args_dict, start_vus=1):
         logger.info(f"Throughput for {vus} VUs: {throughput:.2f} req/sec")
 
         # Stop if adding more VUs does not significantly increase throughput
-        if throughput < prev_throughput * 1.05:  # Less than 5% increase
-            logger.info("Throughput improvement is less than 5%, stopping exponential search.")
+        if throughput < prev_throughput * 1.02:  # Less than 2% increase
+            logger.info("Throughput improvement is less than 2%, stopping exponential search.")
             break
 
         prev_throughput = throughput

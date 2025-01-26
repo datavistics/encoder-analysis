@@ -1,21 +1,29 @@
 import time
 from dataclasses import asdict
 
-from huggingface_hub import create_inference_endpoint, whoami
+from huggingface_hub import create_inference_endpoint, whoami, get_inference_endpoint
 from loguru import logger
 
 
-def deploy_endpoint(instance_config, endpoint_name=None, wait=False):
+def deploy_endpoint(instance_config, endpoint_name, wait=False):
     """Creates and deploys an inference endpoint using the given instance configuration."""
-    if endpoint_name is None:
-        endpoint_name = 'encoder-analysis'
+    namespace = whoami()['name']
+    try:
+        endpoint = get_inference_endpoint(endpoint_name, namespace=namespace)
+        hw_type = endpoint.__dict__['raw']['compute']['instanceType']
+        batch_size = endpoint.__dict__['raw']['model']['env']['INFINITY_BATCH_SIZE']
+        logger.success(f"Re-using Endpoint: hw={hw_type}\tbs={batch_size}\t")
+        return endpoint
+    except:
+        pass
+
     try:
         logger.info("Creating inference endpoint...")
         start_time = time.time()  # Record start time
         endpoint = create_inference_endpoint(
                 endpoint_name,
-                # namespace=whoami()['name'],
-                namespace='HF-test-lab',
+                namespace=namespace,
+                # namespace='HF-test-lab',
                 framework="pytorch",
                 task='text-classification',
                 min_replica=0,
