@@ -10,6 +10,7 @@ const dataset = JSON.parse(open("{{ data_file }}"));
 const filePath = `{{ results_file }}`;
 const hwType = "{{ hw_type }}";
 const batchSize = {{ batch_size }};
+const image = "{{ image }}";
 const engine = "{{ engine }}";
 const vendor = "{{ vendor }}";
 
@@ -119,6 +120,7 @@ export function handleSummary(data) {
         avg_embedding_size: avgEmbeddingSize, // Average embedding size
         hw_type: hwType,
         batch_size: batchSize,
+        image: image,
         engine: engine,
         vendor: vendor,
         vus: {{ pre_allocated_vus }}

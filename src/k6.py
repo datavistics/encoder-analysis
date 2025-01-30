@@ -12,25 +12,32 @@ template_file = "classification-analysis.js.j2"
 
 output_file = Path("./generated").resolve() / "classification-analysis.js"
 
+#Sorry I hardcoded this, I hope it didnt cause you any issues
+image_dict = {
+    'michaelf34/infinity:0.0.75-trt-onnx': 'trt-onnx',
+    'michaelf34/infinity:0.0.75': 'default',
+    }
 
 def call_k6(endpoint, text_column, vus, total_requests, template_file, output_file, dataset_path, k6_bin):
     if 'classification' in template_file:
         task = 'classification'
-    elif 'embedding' in template_file:
-        task = 'embedding'
     elif 'vision-embedding' in template_file:
         task = 'vision-embedding'
+    elif 'embedding' in template_file:
+        task = 'embedding'
     else:
         raise ValueError('Unknown task')
 
     # Load the Jinja2 template
     env = Environment(loader=FileSystemLoader(template_dir))
     template = env.get_template(template_file)
+    image = endpoint.__dict__['raw']['model']['image']['custom']['url']
+    image_short = image_dict.get(image, 'other_image')
     hw_type = endpoint.__dict__['raw']['compute']['instanceType']
     vendor = endpoint.__dict__['raw']['provider']['vendor']
     batch_size = endpoint.__dict__['raw']['model']['env']['INFINITY_BATCH_SIZE']
     engine = endpoint.__dict__['raw']['model']['env']['INFINITY_ENGINE']
-    results_file = Path("./results").resolve() / task / f'{hw_type}' / f'{vendor}_{hw_type}_{engine}_{batch_size}_{vus}.json'
+    results_file = Path("./results").resolve() / task / f'{hw_type}' / f'{vendor}_{hw_type}_{image_short}_{engine}_{batch_size}_{vus}.json'
     if results_file.exists():
         logger.info(f"results file {results_file} already exists")
         with open(results_file) as f:
@@ -47,6 +54,7 @@ def call_k6(endpoint, text_column, vus, total_requests, template_file, output_fi
             hw_type=hw_type,
             batch_size=batch_size,
             vendor=vendor,
+            image=image,
             engine=engine,
             duration="1m"
             )

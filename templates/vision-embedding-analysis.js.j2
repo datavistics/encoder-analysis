@@ -1,0 +1,139 @@
+import {check, fail} from 'k6';
+import http from 'k6/http';
+import {scenario} from 'k6/execution';
+import {Trend, Counter} from 'k6/metrics';
+import {textSummary} from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
+import { SharedArray } from 'k6/data';
+
+const host = "{{ host }}";
+const apiKey = __ENV.HF_TOKEN;
+
+// Load dataset once using SharedArray to avoid copies across VUs
+const dataset = new SharedArray("dataset", function () {
+    return open("{{ data_file }}")
+        .split('\n')
+        .filter(line => line.trim() !== "") // Remove empty lines
+        .map(line => {
+            try {
+                return JSON.parse(line);
+            } catch (e) {
+                console.log(`Skipping invalid JSON line: ${line}`);
+                return null;
+            }
+        })
+        .filter(entry => entry !== null); // Remove null values from failed JSON parsing
+});
+
+const filePath = `{{ results_file }}`;
+const hwType = "{{ hw_type }}";
+const batchSize = {{ batch_size }};
+const image = "{{ image }}";
+const engine = "{{ engine }}";
+const vendor = "{{ vendor }}";
+
+// Metrics definition
+const responseLatency = new Trend('response_latency', true);
+const requestThroughput = new Counter('request_throughput');
+const numVectorsTrend = new Trend('num_vectors', true);
+const invalidEmbeddingsCounter = new Counter('invalid_embeddings');
+
+export function generatePayload(example) {
+    return {
+        "input": [example.{{ text_column }}_b64], //I just kept the same naming, sorry :'(
+        "encoding_format": "float",
+        "modality": "image"
+    };
+}
+
+export const options = {
+    scenarios: {
+        shared_load_test: {
+            executor: 'shared-iterations',
+            vus: {{ pre_allocated_vus }}, // Number of VUs
+            iterations: {{ total_requests }}, // Total number of requests
+            maxDuration: '{{ duration }}', // Time limit
+        },
+    },
+};
+
+export default function run() {
+    const headers = {
+        Accept: "application/json",
+        Authorization: "Bearer " + apiKey,
+        "Content-Type": "application/json",
+    };
+
+    const query = dataset[scenario.iterationInTest % dataset.length];
+    const payload = JSON.stringify(generatePayload(query));
+    const url = `${host}/embeddings`;
+
+    const startTime = Date.now();
+    const res = http.post(url, payload, { headers });
+    const endTime = Date.now();
+    responseLatency.add(endTime - startTime);
+    requestThroughput.add(1);
+
+    // Check the response
+    const passedCheck = check(res, {
+        'http_200': (r) => r.status === 200,
+        'valid_embedding': (r) => {
+            try {
+                const data = JSON.parse(r.body);
+                const isValid = data.object === 'list' && data.data && data.data.length > 0 &&
+                               Array.isArray(data.data[0].embedding) &&
+                               data.data[0].embedding.every(vec => Array.isArray(vec) && vec.length === 128);
+                if (!isValid) invalidEmbeddingsCounter.add(1);
+                return isValid;
+            } catch (e) {
+                return false;
+            }
+        }
+    });
+
+    if (!passedCheck) {
+        fail('Request failed with status ' + res.status + ' or invalid embedding format');
+        return;
+    }
+
+    // Process the response
+    try {
+        const data = JSON.parse(res.body);
+        if (data.object === 'list' && Array.isArray(data.data) && data.data.length === 1) {
+            let numVectors = data.data[0].embedding.length;
+            numVectorsTrend.add(numVectors);
+        } else {
+            fail("Response format incorrect or missing required fields.");
+        }
+    } catch (e) {
+        fail("Failed to parse response body: " + e);
+    }
+}
+
+// Write the summary to a JSON file
+export function handleSummary(data) {
+    const invalidEmbeddings = data.metrics.invalid_embeddings ? data.metrics.invalid_embeddings.values.count : 0;
+
+    const summary = {
+        total_requests: data.metrics.iterations.values.count,
+        test_duration_sec: data.state.testRunDurationMs / 1000,
+        successful_requests: data.metrics.iterations.values.count - (data.metrics.http_req_failed.values.count || 0),
+        avg_latency_ms: data.metrics.response_latency.values.avg,
+        p95_latency_ms: data.metrics.response_latency.values['p(95)'],
+        throughput_req_per_sec: data.metrics.iterations.values.rate,
+        avg_num_vectors: data.metrics.num_vectors.values.avg || 0,
+        min_num_vectors: data.metrics.num_vectors.values.min || 0,
+        max_num_vectors: data.metrics.num_vectors.values.max || 0,
+        invalid_embeddings: invalidEmbeddings,
+        hw_type: hwType,
+        batch_size: batchSize,
+        image: image,
+        engine: engine,
+        vendor: vendor,
+        vus: {{ pre_allocated_vus }}
+    };
+
+    return {
+        [filePath]: JSON.stringify(summary, null, 2), // Save JSON output
+        stdout: textSummary(data, { indent: ' ', enableColors: true }), // Show summary in console
+    };
+}
