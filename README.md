@@ -6,6 +6,7 @@ and [Inference Endpoints](https://huggingface.co/inference-endpoints/dedicated).
 your inference server and deployment method of choice.
 
 I considered a variety of things like:
+
 - GPU type
 - Infinity Image type
 - Many Batch Sizes
@@ -13,7 +14,8 @@ I considered a variety of things like:
 - Multiple Architectures
 
 # Installation
- I used ![Python](https://img.shields.io/badge/python-3.12-blue)
+
+I used ![Python](https://img.shields.io/badge/python-3.12-blue)
 
 1. `git clone https://github.com/datavistics/encoder-analysis.git`
 2. `cd encoder-analysis`
@@ -36,13 +38,16 @@ I considered a variety of things like:
 
 # Results
 
-Do check out these notebooks in nbviewer, as I took a lot of effort to make sure they are interactive. Unfortunately
-they look better in light mode due to the tables. But follow your heart.
+Do check out these [notebooks](https://nbviewer.org/github/datavistics/encoder-analysis/tree/main/) in nbviewer, as I
+took a lot of effort to make sure they are interactive. Unfortunatelythey look better in light mode due to the tables.
+But follow your heart.
 
 - [classification-analysis-gradio.ipynb](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/classification-analysis-gradio.ipynb)
 - [embedding-analysis-gradio.ipynb](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/embedding-analysis-gradio.ipynb)
 - [vision-embedding-analysis-gradio.ipynb](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/vision-embedding-analysis-gradio.ipynb)
 
+# How does it work?
+Each of the **\*-optimization.ipynb** notebooks facilitates this structure:
 ```mermaid
 flowchart TD;
     subgraph Benchmarking Server
@@ -61,4 +66,8 @@ flowchart TD;
     C -->|Processes and Returns| A
 ```
 
+# References and Links
+- [Inference Endpoints](https://huggingface.co/inference-endpoints/dedicated)
+- [michaelfeil/infinity](https://github.com/michaelfeil/infinity/)
 - [Infinity Swagger](https://michaelfeil.eu/infinity/0.0.75/swagger_ui/)
+- [k6 Docs](https://grafana.com/docs/k6/latest/)
