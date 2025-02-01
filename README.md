@@ -39,15 +39,57 @@ I used ![Python](https://img.shields.io/badge/python-3.12-blue)
 # Results
 
 Do check out these [notebooks](https://nbviewer.org/github/datavistics/encoder-analysis/tree/main/) in nbviewer, as I
-took a lot of effort to make sure they are interactive. Unfortunatelythey look better in light mode due to the tables.
+took a lot of effort to make sure they are **interactive**. Unfortunately they look better in light mode due to the
+tables.
 But follow your heart.
 
 - [classification-analysis-gradio.ipynb](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/classification-analysis-gradio.ipynb)
 - [embedding-analysis-gradio.ipynb](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/embedding-analysis-gradio.ipynb)
 - [vision-embedding-analysis-gradio.ipynb](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/vision-embedding-analysis-gradio.ipynb)
 
+## Classification
+
+For [lxyuan/distilbert-base-multilingual-cased-sentiments-student](https://huggingface.co/lxyuan/distilbert-base-multilingual-cased-sentiments-student)
+on a dataset like [tyqiangz/multilingual-sentiments](https://huggingface.co/datasets/tyqiangz/multilingual-sentiments)
+(using the `text` column) we can do 1 Billion classifications for only `$253.82`.
+
+| GPU           | Image         | Batch Size | VUs     | Min Cost    |
+|---------------|---------------|------------|---------|-------------|
+| **nvidia-l4** | **`default`** | **64**     | **448** | **$253.82** |
+
+![classification-results.png](media/classification-results.png)
+[Interactive Version here](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/classification-analysis-gradio.ipynb)
+
+## Embeddings
+
+For [Alibaba-NLP/gte-modernbert-base](https://huggingface.co/Alibaba-NLP/gte-modernbert-base) on a dataset
+like [sentence-transformers/trivia-qa-triplet](https://huggingface.co/datasets/sentence-transformers/trivia-qa-triplet)
+(using the `positive` column) we can do 1 Billion embeddings for only `$409.44`.
+
+| GPU       | Batch Size | VUs | Min Cost |
+|-----------|------------|-----|----------|
+| nvidia-l4 | 256        | 32  | $409.44  |
+
+![embedding-results.png](media/embedding-results.png)
+[Interactive Version here](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/embedding-analysis-gradio.ipynb)
+
+## Vision Embeddings
+
+For [vidore/colqwen2-v1.0-merged](https://huggingface.co/vidore/colqwen2-v1.0-merged) on a dataset
+like [openbmb/RLAIF-V-Dataset](https://huggingface.co/datasets/openbmb/RLAIF-V-Dataset)
+(using the `image` column) we can do 1 Billion ColBERT style embeddings (late interaction) for `$44496.51`.
+
+| GPU       | Batch Size | VUs | Min Cost   |
+|-----------|------------|-----|------------|
+| nvidia-l4 | 4          | 4   | $44496.51  |
+
+![vision-embedding-results.png](media/vision-embedding-results.png)
+[Interactive Version here](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/embedding-analysis-gradio.ipynb)
+
 # How does it work?
+
 Each of the **\*-optimization.ipynb** notebooks facilitates this structure:
+
 ```mermaid
 flowchart TD;
     subgraph Benchmarking Server
@@ -67,6 +109,7 @@ flowchart TD;
 ```
 
 # References and Links
+
 - [Inference Endpoints](https://huggingface.co/inference-endpoints/dedicated)
 - [michaelfeil/infinity](https://github.com/michaelfeil/infinity/)
 - [Infinity Swagger](https://michaelfeil.eu/infinity/0.0.75/swagger_ui/)
