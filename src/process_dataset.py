@@ -7,27 +7,46 @@ from pathlib import Path
 
 import pandas as pd
 from PIL import Image
+from datasets import Dataset
 from loguru import logger
 
 
-def tokenize_and_filter(dataset, tokenizer, text_column, min_tokens=None, max_tokens=None, num_proc=8):
-    """Tokenizes dataset, adds a num_tokens column, and filters based on token length constraints."""
+def tokenize_and_filter(dataset: Dataset, tokenizer, text_column: str, min_tokens: int = None, max_tokens: int = None,
+                        num_proc: int = 8):
+    """
+    Tokenizes a dataset, adds a `num_tokens` column, and filters based on token length constraints.
 
-    # Tokenize and count tokens
+    :param dataset: Dataset to tokenize and filter.
+    :param tokenizer: Tokenizer object with an `encode` method.
+    :param text_column: Column name containing text data.
+    :param min_tokens: Minimum number of tokens for filtering (optional).
+    :param max_tokens: Maximum number of tokens for filtering (optional).
+    :param num_proc: Number of processes for parallel execution.
+    :return: Filtered dataset with token counts.
+    """
+    logger.info("Tokenizing dataset and applying token count filter")
+
     dataset = dataset.map(
             lambda example: {"num_tokens": len(tokenizer.encode(example[text_column]))},
             num_proc=num_proc,
             )
 
-    # Apply filtering if min_tokens and max_tokens are provided
     if min_tokens is not None and max_tokens is not None:
         dataset = dataset.filter(lambda x: min_tokens <= x["num_tokens"] <= max_tokens, num_proc=num_proc)
+        logger.info(f"Filtered dataset with token range [{min_tokens}, {max_tokens}]")
 
     return dataset
 
 
-def sample_dataset(dataset, n_samples, seed=42):
-    """Samples a dataset randomly if it has more than n_samples."""
+def sample_dataset(dataset, n_samples: int, seed: int = 42):
+    """
+    Samples a dataset randomly if it has more than `n_samples`.
+
+    :param dataset: Dataset to sample from.
+    :param n_samples: Number of samples to retain.
+    :param seed: Random seed for reproducibility.
+    :return: Sampled dataset.
+    """
     total_samples = len(dataset)
 
     if total_samples <= n_samples:
@@ -41,8 +60,13 @@ def sample_dataset(dataset, n_samples, seed=42):
     return return_dataset
 
 
-def save_dataset(data, file_path):
-    """Saves processed dataset in JSON or JSONL format based on file extension."""
+def save_dataset(data, file_path: str):
+    """
+    Saves a dataset in JSON or JSONL format based on the file extension.
+
+    :param data: Dataset to save.
+    :param file_path: Path where the dataset should be saved.
+    """
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
     # Convert to a list of dictionaries
@@ -60,10 +84,17 @@ def save_dataset(data, file_path):
             json.dump(data, f, ensure_ascii=False, indent=4)
         logger.info(f"Saved dataset to {file_path} in JSON format")
     else:
+        logger.error("Unsupported file extension. Use '.json' or '.jsonl'.")
         raise ValueError("Unsupported file extension. Use '.json' or '.jsonl'.")
 
 
-def load_json_files(folder_path):
+def load_json_files(folder_path: str) -> pd.DataFrame:
+    """
+    Loads JSON files from a folder into a Pandas DataFrame.
+
+    :param folder_path: Path to the folder containing JSON files.
+    :return: DataFrame containing all loaded data.
+    """
     all_data = []
     folder = Path(folder_path)
 
@@ -84,7 +115,7 @@ def load_json_files(folder_path):
         except json.JSONDecodeError:
             logger.error(f"Skipping {file_path.name}: Invalid JSON")
 
-    # Convert to DataFrame
+    logger.info(f"Loaded {len(all_data)} entries from {folder_path}")
     return pd.DataFrame(all_data)
 
 
