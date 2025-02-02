@@ -17,8 +17,8 @@
 - [Installation](#installation)
 - [Getting Started](#getting-started)
 - [Project Structure](#project-structure)
-- [Results](#results)
 - [How does it work?](#how-does-it-work)
+- [Results](#results)
 - [References and Links](#references-and-links)
 
 # Introduction
@@ -64,6 +64,33 @@ I used ![Python](https://img.shields.io/badge/python-3.12-blue)
 - `src` I abstracted a fair amount of code here. I tried to keep any important details in the notebooks
 - `templates` these are the k6 jinja templates that I use to generate each experiment
 - `data`, `generated`, and `results` are used to store non-version-controlled project files
+
+# How does it work?
+
+Each of the **\*-optimization.ipynb** notebooks facilitates this structure:
+
+```mermaid
+flowchart TD;
+    subgraph Benchmarking Server
+        A[k6 Running Tests]
+        D[Instance Config]
+    end
+
+    subgraph Inference Endpoint
+        C[Container Running Infinity]
+        E[Next Inference Endpoint]
+    end
+
+    D -->|Defines Test Parameters| A
+    D -->|Deploys Inference Endpoint| E
+    A -->|Sends Test Data| C
+    C -->|Processes and Returns| A
+```
+
+1. Define the benchmarking parameters (GPU, batch size, VUs, etc)
+2. Deploy the inference server (Infinity on Hugging Face Endpoints)
+3. Run K6 performance tests to evaluate speed, cost, and efficiency
+4. Store and visualize results for optimization
 
 # Results
 
@@ -114,33 +141,6 @@ like [openbmb/RLAIF-V-Dataset](https://huggingface.co/datasets/openbmb/RLAIF-V-D
 
 ![vision-embedding-results.png](media/vision-embedding-results.png)
 [Interactive Version here](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/embedding-analysis-gradio.ipynb)
-
-# How does it work?
-
-Each of the **\*-optimization.ipynb** notebooks facilitates this structure:
-
-```mermaid
-flowchart TD;
-    subgraph Benchmarking Server
-        A[k6 Running Tests]
-        D[Instance Config]
-    end
-
-    subgraph Inference Endpoint
-        C[Container Running Infinity]
-        E[Next Inference Endpoint]
-    end
-
-    D -->|Defines Test Parameters| A
-    D -->|Deploys Inference Endpoint| E
-    A -->|Sends Test Data| C
-    C -->|Processes and Returns| A
-```
-
-1. Define the benchmarking parameters (GPU, batch size, VUs, etc)
-2. Deploy the inference server (Infinity on Hugging Face Endpoints)
-3. Run K6 performance tests to evaluate speed, cost, and efficiency
-4. Store and visualize results for optimization
 
 
 # References and Links
