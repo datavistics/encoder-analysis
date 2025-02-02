@@ -39,10 +39,6 @@ I considered a variety of things like:
 # Installation
 
 I used ![Python](https://img.shields.io/badge/python-3.12-blue)
-![Python](https://img.shields.io/badge/python-3.12-blue)
-![License](https://img.shields.io/github/license/datavistics/encoder-analysis)
-![Contributors](https://img.shields.io/github/contributors/datavistics/encoder-analysis)
-
 
 1. `git clone https://github.com/datavistics/encoder-analysis.git`
 2. `cd encoder-analysis`
