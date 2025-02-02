@@ -1,3 +1,11 @@
+<!-- PROJECT SHIELDS -->
+<!--
+*** I'm using markdown "reference style" links for readability.
+*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
+*** See the bottom of this document for the declaration of the reference variables
+*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
+*** https://www.markdownguide.org/basic-syntax/#reference-style-links
+-->
 [![Contributors][contributors-shield]][contributors-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
@@ -145,3 +153,18 @@ flowchart TD;
 - [michaelfeil/infinity](https://github.com/michaelfeil/infinity/)
 - [Infinity Swagger](https://michaelfeil.eu/infinity/0.0.75/swagger_ui/)
 - [k6 Docs](https://grafana.com/docs/k6/latest/)
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/datavistics/encoder-analysis.svg?style=for-the-badge
+[contributors-url]: https://github.com/datavistics/encoder-analysis/graphs/contributors
+
+[stars-shield]: https://img.shields.io/github/stars/datavistics/encoder-analysis.svg?style=for-the-badge
+[stars-url]: https://github.com/datavistics/encoder-analysis/stargazers
+
+[issues-shield]: https://img.shields.io/github/issues/datavistics/encoder-analysis.svg?style=for-the-badge
+[issues-url]: https://github.com/datavistics/encoder-analysis/issues
+
+[license-shield]: https://img.shields.io/github/license/datavistics/encoder-analysis.svg?style=for-the-badge
+[license-url]: https://github.com/datavistics/encoder-analysis/blob/main/LICENSE
