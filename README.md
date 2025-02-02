@@ -49,9 +49,9 @@ I used ![Python](https://img.shields.io/badge/python-3.12-blue)
 ## Getting Started
 
 1. Run `jupyter lab`
-2. First choose your task [`classification`, `embedding`, `vision-embedding`]
+2. Choose your task [`classification`, `embedding`, `vision-embedding`]
 3. Run `<task>-optimization.ipynb` to get the best configuration
-4. Run `<task>-analysis.ipynb` to get the results
+4. Run `<task>-analysis.ipynb` to visualize the results
 5. Alternatively run `<task>-analysis-gradio.ipynb` to have more interactive results
 
 # Project Structure
