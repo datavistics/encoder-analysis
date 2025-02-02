@@ -1,29 +1,54 @@
+[![Contributors][contributors-shield]][contributors-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+
+
+# Table of Contents
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [Project Structure](#project-structure)
+- [Results](#results)
+- [How does it work?](#how-does-it-work)
+- [References and Links](#references-and-links)
+
 # Introduction
 
-This repo is to support a blog to help anyone estimate the cost while optionally considering latency for large scale
-classification, embedding, or vision embedding. It uses [michaelfeil/infinity](https://github.com/michaelfeil/infinity/)
-and [Inference Endpoints](https://huggingface.co/inference-endpoints/dedicated). You can swap either rather easily for
-your inference server and deployment method of choice.
+This repository supports a blog post that helps users estimate costs for large-scale classification, embedding, or
+vision embedding tasks. It provides benchmarking tools for different GPU types, batch sizes, and inference methods,
+using [michaelfeil/infinity](https://github.com/michaelfeil/infinity/)
+and [Inference Endpoints](https://huggingface.co/inference-endpoints/dedicated).
 
 I considered a variety of things like:
 
 - GPU type
 - Infinity Image type
-- Many Batch Sizes
-- Many VUs amounts
+- Varying Batch Sizes
+- Varying VUs amounts
 - Multiple Architectures
 
 # Installation
 
 I used ![Python](https://img.shields.io/badge/python-3.12-blue)
+![Python](https://img.shields.io/badge/python-3.12-blue)
+![License](https://img.shields.io/github/license/datavistics/encoder-analysis)
+![Contributors](https://img.shields.io/github/contributors/datavistics/encoder-analysis)
+
 
 1. `git clone https://github.com/datavistics/encoder-analysis.git`
 2. `cd encoder-analysis`
 3. `pip install -r requirements.txt`
 4. `pip install jupyterlab`
 5. [Install k6](https://grafana.com/docs/k6/latest/set-up/install-k6/#install-k6) based on your platform
-6. `jupyter lab`
-7. Run your notebook of choice
+
+## Getting Started
+
+1. Run `jupyter lab`
+2. First choose your task [`classification`, `embedding`, `vision-embedding`]
+3. Run `<task>-optimization.ipynb` to get the best configuration
+4. Run `<task>-analysis.ipynb` to get the results
+5. Alternatively run `<task>-analysis-gradio.ipynb` to have more interactive results
 
 # Project Structure
 
@@ -60,7 +85,7 @@ on a dataset like [tyqiangz/multilingual-sentiments](https://huggingface.co/data
 ![classification-results.png](media/classification-results.png)
 [Interactive Version here](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/classification-analysis-gradio.ipynb)
 
-## Embeddings
+## Embedding
 
 For [Alibaba-NLP/gte-modernbert-base](https://huggingface.co/Alibaba-NLP/gte-modernbert-base) on a dataset
 like [sentence-transformers/trivia-qa-triplet](https://huggingface.co/datasets/sentence-transformers/trivia-qa-triplet)
@@ -73,15 +98,15 @@ like [sentence-transformers/trivia-qa-triplet](https://huggingface.co/datasets/s
 ![embedding-results.png](media/embedding-results.png)
 [Interactive Version here](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/embedding-analysis-gradio.ipynb)
 
-## Vision Embeddings
+## Vision Embedding
 
 For [vidore/colqwen2-v1.0-merged](https://huggingface.co/vidore/colqwen2-v1.0-merged) on a dataset
 like [openbmb/RLAIF-V-Dataset](https://huggingface.co/datasets/openbmb/RLAIF-V-Dataset)
-(using the `image` column) we can do 1 Billion ColBERT style embeddings (late interaction) for `$44496.51`.
+(using the `image` column) we can do 1 Billion ColBERT style embeddings (late interaction) on images for `$44496.51`.
 
-| GPU       | Batch Size | VUs | Min Cost   |
-|-----------|------------|-----|------------|
-| nvidia-l4 | 4          | 4   | $44496.51  |
+| GPU       | Batch Size | VUs | Min Cost  |
+|-----------|------------|-----|-----------|
+| nvidia-l4 | 4          | 4   | $44496.51 |
 
 ![vision-embedding-results.png](media/vision-embedding-results.png)
 [Interactive Version here](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/embedding-analysis-gradio.ipynb)
@@ -107,6 +132,12 @@ flowchart TD;
     A -->|Sends Test Data| C
     C -->|Processes and Returns| A
 ```
+
+1. Define the benchmarking parameters (GPU, batch size, VUs, etc)
+2. Deploy the inference server (Infinity on Hugging Face Endpoints)
+3. Run K6 performance tests to evaluate speed, cost, and efficiency
+4. Store and visualize results for optimization
+
 
 # References and Links
 
