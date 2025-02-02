@@ -47,6 +47,7 @@ I used ![Python](https://img.shields.io/badge/python-3.12-blue)
 5. [Install k6](https://grafana.com/docs/k6/latest/set-up/install-k6/#install-k6) based on your platform
 
 ## Getting Started
+Make sure you have the ability to [deploy an Inference Endpoint](https://endpoints.huggingface.co/new)
 
 1. Run `jupyter lab`
 2. Choose your task [`classification`, `embedding`, `vision-embedding`]
