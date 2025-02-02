@@ -11,8 +11,8 @@
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 
-
 # Table of Contents
+
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Getting Started](#getting-started)
@@ -142,7 +142,6 @@ like [openbmb/RLAIF-V-Dataset](https://huggingface.co/datasets/openbmb/RLAIF-V-D
 ![vision-embedding-results.png](media/vision-embedding-results.png)
 [Interactive Version here](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/embedding-analysis-gradio.ipynb)
 
-
 # References and Links
 
 - [Inference Endpoints](https://huggingface.co/inference-endpoints/dedicated)
@@ -150,17 +149,21 @@ like [openbmb/RLAIF-V-Dataset](https://huggingface.co/datasets/openbmb/RLAIF-V-D
 - [Infinity Swagger](https://michaelfeil.eu/infinity/0.0.75/swagger_ui/)
 - [k6 Docs](https://grafana.com/docs/k6/latest/)
 
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
 [contributors-shield]: https://img.shields.io/github/contributors/datavistics/encoder-analysis.svg?style=for-the-badge
+
 [contributors-url]: https://github.com/datavistics/encoder-analysis/graphs/contributors
 
 [stars-shield]: https://img.shields.io/github/stars/datavistics/encoder-analysis.svg?style=for-the-badge
+
 [stars-url]: https://github.com/datavistics/encoder-analysis/stargazers
 
 [issues-shield]: https://img.shields.io/github/issues/datavistics/encoder-analysis.svg?style=for-the-badge
+
 [issues-url]: https://github.com/datavistics/encoder-analysis/issues
 
 [license-shield]: https://img.shields.io/github/license/datavistics/encoder-analysis.svg?style=for-the-badge
+
 [license-url]: https://github.com/datavistics/encoder-analysis/blob/main/LICENSE
