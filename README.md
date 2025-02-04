@@ -143,6 +143,8 @@ like [openbmb/RLAIF-V-Dataset](https://huggingface.co/datasets/openbmb/RLAIF-V-D
 ![vision-embedding-results.png](media/vision-embedding-results.png)
 [Interactive Version here](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/embedding-analysis-gradio.ipynb)
 
+{% include_relative plotly_example.html %} 
+
 # References and Links
 
 - [Inference Endpoints](https://huggingface.co/inference-endpoints/dedicated)
