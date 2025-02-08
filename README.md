@@ -73,7 +73,7 @@ Each of the **\*-optimization.ipynb** notebooks facilitates this structure:
 ```mermaid
 flowchart TD;
     subgraph Benchmarking Server
-        A[k6 Running Tests]
+        A[k6 Load Testing]
         D[Instance Config]
     end
 
@@ -114,7 +114,7 @@ on a dataset like [tyqiangz/multilingual-sentiments](https://huggingface.co/data
 |---------------|---------------|------------|---------|-------------|
 | **nvidia-l4** | **`default`** | **64**     | **448** | **$253.82** |
 
-![classification-results.png](media/classification-results.png)
+![classification-results.png](media/classification-contour.png)
 [Interactive Version here](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/classification-analysis-gradio.ipynb)
 
 ## Embedding
@@ -127,7 +127,7 @@ like [sentence-transformers/trivia-qa-triplet](https://huggingface.co/datasets/s
 |-----------|------------|-----|----------|
 | nvidia-l4 | 256        | 32  | $409.44  |
 
-![embedding-results.png](media/embedding-results.png)
+![embedding-results.png](media/embedding-contour.png)
 [Interactive Version here](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/embedding-analysis-gradio.ipynb)
 
 ## Vision Embedding
@@ -140,7 +140,7 @@ like [openbmb/RLAIF-V-Dataset](https://huggingface.co/datasets/openbmb/RLAIF-V-D
 |-----------|------------|-----|-----------|
 | nvidia-l4 | 4          | 4   | $44496.51 |
 
-![vision-embedding-results.png](media/vision-embedding-results.png)
+![vision-embedding-results.png](media/vision-embedding-contour.png)
 [Interactive Version here](https://nbviewer.org/github/datavistics/encoder-analysis/blob/main/embedding-analysis-gradio.ipynb)
 
 # References and Links
